@@ -70,5 +70,17 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/text_vertical_margin" />
 
+        <TextView
+            android:id="@+id/tvCharCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btnCancel"
+            android:layout_marginBottom="11dp"
+            android:layout_toStartOf="@+id/tvScreenName"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="16sp"
+            tools:text="140" />
+
     </RelativeLayout>
 </layout>

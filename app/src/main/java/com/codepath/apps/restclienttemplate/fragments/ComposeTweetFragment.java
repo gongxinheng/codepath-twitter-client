@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import com.codepath.apps.restclienttemplate.TwitterClient;
 import com.codepath.apps.restclienttemplate.databinding.FragmentComposeTweetBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
+import com.codepath.apps.restclienttemplate.utils.Constants;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.raizlabs.android.dbflow.StringUtils;
 
@@ -75,6 +78,23 @@ public class ComposeTweetFragment extends DialogFragment {
         final TwitterClient twitterClient = TwitterApp.getRestClient();
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_compose_tweet, container, false);
+        binding.tvCharCounter.setText(String.valueOf(Constants.MAX_TWEET_CHARS_NUM));
+        binding.etTweet.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int charsRemain = Constants.MAX_TWEET_CHARS_NUM - s.length();
+                binding.tvCharCounter.setText(String.valueOf(charsRemain));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
         binding.btnTweet.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
