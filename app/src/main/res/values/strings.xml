@@ -6,4 +6,10 @@
     <string name="intent_scheme">twitteroauth</string>
     <string name="intent_host">simpletweets</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cancel">Cancel</string>
+    <string name="tweet">Tweet</string>
+    <string name="compose">Compose</string>
+
 </resources>

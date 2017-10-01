@@ -3,12 +3,14 @@ package com.codepath.apps.restclienttemplate.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class User {
+import java.io.Serializable;
 
-    public String name;
-    public long uid;
-    public String screenName;
-    public String profileImageUrl;
+public class User implements Serializable {
+
+    public String name = "";
+    public long uid = 0;
+    public String screenName = "";
+    public String profileImageUrl = "";
 
     // deserialize the JSON
     public static User fromJSON(JSONObject json) throws JSONException {
