@@ -1,8 +1,11 @@
 package com.codepath.apps.restclienttemplate.activities;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +17,7 @@ import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.TwitterApp;
 import com.codepath.apps.restclienttemplate.TwitterClient;
 import com.codepath.apps.restclienttemplate.adapters.TweetAdapter;
+import com.codepath.apps.restclienttemplate.databinding.ActivityTimelineBinding;
 import com.codepath.apps.restclienttemplate.fragments.ComposeTweetFragment;
 import com.codepath.apps.restclienttemplate.listeners.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
@@ -30,6 +34,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeTweetFragment.PostTweetListener {
 
+    private ActivityTimelineBinding binding;
     private TwitterClient client;
     private TweetAdapter tweetAdapter;
     private ArrayList<Tweet> tweets;
@@ -45,22 +50,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
             Log.d("TwitterClient", response.toString());
-            // iterate through the JSON array
-            // for each entry, deserialize the JSON object
-
-            for (int i = 0; i < response.length(); i++) {
-                // convert each object to a Tweet model
-                // add that Tweet model to our data source
-                // notify the adapter that we've added an item
-                Tweet tweet = null;
-                try {
-                    tweet = Tweet.fronJSON(response.getJSONObject(i));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                tweets.add(tweet);
-                tweetAdapter.notifyItemInserted(tweets.size() - 1);
-            }
+            populateTimeLine(response);
         }
 
         @Override
@@ -82,9 +72,26 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timeline);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_timeline);
 
         client = TwitterApp.getRestClient();
+
+        // Setup refresh listener which triggers new data loading
+        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                fetchTimelineAsync(0);
+            }
+        });
+        // Configure the refreshing colors
+        binding.swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
 
         // find the RecyclerView
         rvTweets = (RecyclerView) findViewById(R.id.rvTweet);
@@ -138,6 +145,25 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         client.getNewHomeTimeline(defaultJsonHttpResponseHandler, 1, Constants.TWEETS_COUNT_PER_PAGE);
     }
 
+    private void populateTimeLine(@NonNull JSONArray response) {
+        // iterate through the JSON array
+        // for each entry, deserialize the JSON object
+
+        for (int i = 0; i < response.length(); i++) {
+            // convert each object to a Tweet model
+            // add that Tweet model to our data source
+            // notify the adapter that we've added an item
+            Tweet tweet = null;
+            try {
+                tweet = Tweet.fronJSON(response.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            tweets.add(tweet);
+            tweetAdapter.notifyItemInserted(tweets.size() - 1);
+        }
+    }
+
     // Append the next page of data into the adapter
     public void loadNextDataFromApi(int offset) {
         // Send an API request to retrieve appropriate paginated data
@@ -158,4 +184,32 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             rvTweets.scrollToPosition(0);
         }
     }
+
+    public void fetchTimelineAsync(int page) {
+        // Send the network request to fetch the updated data
+        // `client` here is an instance of Android Async HTTP
+        // getHomeTimeline is an example endpoint.
+        client.getNewHomeTimeline(new JsonHttpResponseHandler() {
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                // Clear out old items before appending in the new ones
+                reset();
+                // ...the data has come back, add new items to your adapter...
+                populateTimeLine(response);
+                // Now we call setRefreshing(false) to signal refresh has finished
+                binding.swipeContainer.setRefreshing(false);
+            }
+
+            public void onFailure(Throwable e) {
+                Log.d("DEBUG", "Fetch timeline error: " + e.toString());
+            }
+        }, 1, Constants.TWEETS_COUNT_PER_PAGE);
+    }
+
+    // Reset all views and clear items
+    private void reset() {
+        scrollListener.resetState();
+        tweets.clear();
+        tweetAdapter.notifyDataSetChanged();
+    }
+
 }

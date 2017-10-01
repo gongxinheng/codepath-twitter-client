@@ -46,7 +46,7 @@ public class TwitterClient extends OAuthBaseClient {
 
 	// CHANGE THIS
 	// DEFINE METHODS for different API endpoints here
-	public void getNewHomeTimeline(AsyncHttpResponseHandler handler, int sinceId, int count) {
+	public void getNewHomeTimeline(AsyncHttpResponseHandler handler, long sinceId, int count) {
 		String apiUrl = getApiUrl(REST_HOME_TIMELINE_URL);
 		// Can specify query string params directly or through RequestParams.
 		RequestParams params = new RequestParams();
