@@ -1,15 +1,13 @@
 package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.codepath.apps.restclienttemplate.R;
+import com.codepath.apps.restclienttemplate.databinding.ItemTweetBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
 import java.util.List;
@@ -30,10 +28,9 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View tweetView = inflater.inflate(R.layout.item_tweet, parent, false);
-        ViewHolder viewHolder = new ViewHolder(tweetView);
+        ItemTweetBinding itemTweetBinding = ItemTweetBinding.inflate(inflater, parent, false);
 
-        return viewHolder;
+        return new ViewHolder(itemTweetBinding, context);
     }
 
     // bind the values vased on the position of the element
@@ -41,12 +38,7 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
     public void onBindViewHolder(ViewHolder holder, int position) {
         // get the data according to position
         Tweet tweet = mTweets.get(position);
-
-        // populate the views according to this data
-        holder.tvUsername.setText(tweet.user.name);
-        holder.tvBody.setText(tweet.body);
-
-        Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
+        holder.bind(tweet);
     }
 
     @Override
@@ -57,18 +49,20 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
     // create ViewHolder class
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView ivProfileImage;
-        public TextView tvUsername;
-        public TextView tvBody;
+        public final ItemTweetBinding binding;
+        public final Context context;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
+        public ViewHolder(@NonNull ItemTweetBinding binding,
+                          @NonNull final Context context) {
+            super(binding.getRoot());
+            this.binding = binding;
+            this.context = context;
+        }
 
-            // perform findViewById lookups
-
-            ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
-            tvUsername = (TextView) itemView.findViewById(R.id.tvUserName);
-            tvBody = (TextView) itemView.findViewById(R.id.tvBody);
+        public void bind(Tweet tweet) {
+            binding.setTweet(tweet);
+            Glide.with(context).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
+            binding.executePendingBindings();
         }
     }
 }
