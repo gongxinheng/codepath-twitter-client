@@ -47,6 +47,8 @@
             android:layout_below="@+id/tvUserName"
             android:layout_marginLeft="5dp"
             android:layout_toEndOf="@+id/ivProfileImage"
+            android:autoLink="all"
+            android:linksClickable="true"
             android:text="@{tweet.body}"
             tools:text="With data from @googlenewslab, tap below to see our insights on the top search trends from this week." />
 
