@@ -1,15 +1,31 @@
 package com.codepath.apps.restclienttemplate.models;
 
+import com.codepath.apps.restclienttemplate.database.MyDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+@Table(database = MyDatabase.class)
+public class User extends BaseModel implements Serializable {
 
-    public String name = "";
+    @PrimaryKey
+    @Column
     public long uid = 0;
+
+    @Column
+    public String name = "";
+
+    @Column
     public String screenName = "";
+
+    @Column
     public String profileImageUrl = "";
 
     // deserialize the JSON
@@ -23,5 +39,10 @@ public class User implements Serializable {
         user.profileImageUrl = json.getString("profile_image_url");
 
         return user;
+    }
+
+    // Record Finders
+    public static User byId(long uid) {
+        return new Select().from(User.class).where(User_Table.uid.eq(uid)).querySingle();
     }
 }

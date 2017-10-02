@@ -1,16 +1,46 @@
 package com.codepath.apps.restclienttemplate.models;
 
+import android.support.annotation.NonNull;
+
+import com.codepath.apps.restclienttemplate.database.MyDatabase;
 import com.codepath.apps.restclienttemplate.utils.Utils;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Tweet {
+import java.util.ArrayList;
+import java.util.List;
 
-    public String body;
+@Table(database = MyDatabase.class)
+public class Tweet extends BaseModel {
+
+    @PrimaryKey
+    @Column
     public long uid; // database ID for the tweet
+
+    @Column
+    public String body;
+
+    @ForeignKey(saveForeignKeyModel = true,
+            references = {@ForeignKeyReference(
+            columnName = "user", foreignKeyColumnName = "uid")})
     public User user;
+
+    @Column
     public String createdAt;
+
+    // Record Finders
+    public static Tweet byId(long uid) {
+        return new Select().from(Tweet.class).where(Tweet_Table.uid.eq(uid)).querySingle();
+    }
 
     // deserialize the JSON
     public static Tweet fronJSON(JSONObject jsonObject) throws JSONException {
@@ -23,5 +53,21 @@ public class Tweet {
         tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
 
         return tweet;
+    }
+
+    @NonNull
+    public static List<Tweet> getTopOfflineTweets(int startPos, int count) {
+        List<Tweet> tweets = SQLite.select()
+                    .from(Tweet.class)
+                    .orderBy(Tweet_Table.uid, false)
+                    .queryList();
+
+        try {
+            tweets = tweets.subList(startPos, startPos + count);
+        } catch (IndexOutOfBoundsException e) {
+            return new ArrayList<>();
+        }
+
+        return tweets;
     }
 }

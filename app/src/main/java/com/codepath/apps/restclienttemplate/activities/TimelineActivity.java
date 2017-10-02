@@ -12,15 +12,16 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.TwitterApp;
-import com.codepath.apps.restclienttemplate.TwitterClient;
 import com.codepath.apps.restclienttemplate.adapters.TweetAdapter;
 import com.codepath.apps.restclienttemplate.databinding.ActivityTimelineBinding;
 import com.codepath.apps.restclienttemplate.fragments.ComposeTweetFragment;
 import com.codepath.apps.restclienttemplate.listeners.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.codepath.apps.restclienttemplate.utils.Constants;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -29,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -40,6 +42,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     private ArrayList<Tweet> tweets;
     private RecyclerView rvTweets;
     private EndlessRecyclerViewScrollListener scrollListener;
+    private boolean offlineMode;
 
     private final JsonHttpResponseHandler defaultJsonHttpResponseHandler = new JsonHttpResponseHandler() {
         @Override
@@ -55,7 +58,11 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
 
         @Override
         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            Log.d("TwitterClient", errorResponse.toString());
+            //Log.d("TwitterClient", errorResponse.toString());
+            offlineMode = true;
+            Toast.makeText(TimelineActivity.this, "Offline mode on", Toast.LENGTH_LONG).show();
+            // Load offline
+            populateTimeLine(Tweet.getTopOfflineTweets(0, Constants.TWEETS_COUNT_PER_PAGE));
         }
 
         @Override
@@ -148,7 +155,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     private void populateTimeLine(@NonNull JSONArray response) {
         // iterate through the JSON array
         // for each entry, deserialize the JSON object
-
         for (int i = 0; i < response.length(); i++) {
             // convert each object to a Tweet model
             // add that Tweet model to our data source
@@ -160,8 +166,15 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 e.printStackTrace();
             }
             tweets.add(tweet);
+            tweet.save();
             tweetAdapter.notifyItemInserted(tweets.size() - 1);
         }
+    }
+
+    // Offline mode
+    private void populateTimeLine(@NonNull List<Tweet> tweets) {
+        this.tweets.addAll(tweets);
+        tweetAdapter.notifyDataSetChanged();
     }
 
     // Append the next page of data into the adapter
@@ -171,15 +184,20 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        if (tweets.isEmpty()) return;
-        long maxId = tweets.get(tweets.size() - 1).uid;
-        client.getHomeTimeline(defaultJsonHttpResponseHandler, maxId, Constants.TWEETS_COUNT_PER_PAGE);
+        if (!offlineMode) {
+            if (tweets.isEmpty()) return;
+            long maxId = tweets.get(tweets.size() - 1).uid;
+            client.getHomeTimeline(defaultJsonHttpResponseHandler, maxId, Constants.TWEETS_COUNT_PER_PAGE);
+        } else {
+            populateTimeLine(Tweet.getTopOfflineTweets(offset, Constants.TWEETS_COUNT_PER_PAGE));
+        }
     }
 
     @Override
     public void onPostReturn(boolean success, @Nullable Tweet newTweet) {
         if (success && newTweet != null) {
             tweets.add(0, newTweet);
+            newTweet.save();
             tweetAdapter.notifyItemInserted(0);
             rvTweets.scrollToPosition(0);
         }
