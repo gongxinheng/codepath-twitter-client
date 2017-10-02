@@ -16,11 +16,12 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Table(database = MyDatabase.class)
-public class Tweet extends BaseModel {
+public class Tweet extends BaseModel implements Serializable {
 
     @PrimaryKey
     @Column

@@ -2,13 +2,18 @@ package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.databinding.ItemTweetBinding;
+import com.codepath.apps.restclienttemplate.fragments.TweetDetailFragment;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.utils.Constants;
 
 import java.util.List;
 
@@ -59,10 +64,20 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
             this.context = context;
         }
 
-        public void bind(Tweet tweet) {
+        public void bind(@NonNull final Tweet tweet) {
             binding.setTweet(tweet);
             Glide.with(context).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
             binding.executePendingBindings();
+            binding.getRoot().setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+                            TweetDetailFragment tweetDetailFragment = TweetDetailFragment.newInstance(tweet);
+                            tweetDetailFragment.show(fm, Constants.FLAG_COMPOSE_FRAGMENT);
+                        }
+                    }
+            );
         }
     }
 }
