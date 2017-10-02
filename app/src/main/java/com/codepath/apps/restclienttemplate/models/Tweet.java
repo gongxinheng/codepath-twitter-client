@@ -13,6 +13,7 @@ import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,6 +39,9 @@ public class Tweet extends BaseModel implements Serializable {
     @Column
     public String createdAt;
 
+    @Column
+    public String mediaUrl;
+
     // Record Finders
     public static Tweet byId(long uid) {
         return new Select().from(Tweet.class).where(Tweet_Table.uid.eq(uid)).querySingle();
@@ -52,6 +56,16 @@ public class Tweet extends BaseModel implements Serializable {
         tweet.uid = jsonObject.getLong("id");
         tweet.createdAt = Utils.getRelativeTimeAgo(jsonObject.getString("created_at"));
         tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
+        JSONObject entities = jsonObject.getJSONObject("entities");
+        if (entities != null && entities.has("media")) {
+            JSONArray medias = entities.getJSONArray("media");
+            if (medias.length() > 0) {
+                JSONObject media = (JSONObject) medias.get(0);
+                if (media.has("media_url")) {
+                    tweet.mediaUrl = media.getString("media_url");
+                }
+            }
+        }
 
         return tweet;
     }

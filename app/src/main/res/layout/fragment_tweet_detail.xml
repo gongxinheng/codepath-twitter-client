@@ -62,5 +62,13 @@
             android:layout_marginEnd="@dimen/text_horizontal_margin"
             android:text="@{tweet.createdAt}" />
 
+        <ImageView
+            android:id="@+id/ivMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tvBody"
+            android:layout_below="@+id/tvBody"
+            app:srcCompat="@android:color/holo_blue_bright" />
+
     </RelativeLayout>
 </layout>

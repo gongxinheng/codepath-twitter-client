@@ -60,6 +60,12 @@ public class TweetDetailFragment extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tweet_detail, container, false);
         binding.setTweet(tweet);
         Glide.with(getContext()).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
+        if (tweet.mediaUrl == null) {
+            binding.ivMedia.setVisibility(View.GONE);
+        } else {
+            binding.ivMedia.setVisibility(View.VISIBLE);
+            Glide.with(getContext()).load(tweet.mediaUrl).into(binding.ivMedia);
+        }
         return binding.getRoot();
     }
 }
