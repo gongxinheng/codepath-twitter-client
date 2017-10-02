@@ -9,11 +9,11 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.Serializable;
+import org.parceler.Parcel;
 
 @Table(database = MyDatabase.class)
-public class User extends BaseModel implements Serializable {
+@Parcel
+public class User extends BaseModel {
 
     @PrimaryKey
     @Column

@@ -14,6 +14,8 @@ import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.databinding.FragmentTweetDetailBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
+import org.parceler.Parcels;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -41,7 +43,7 @@ public class TweetDetailFragment extends DialogFragment {
     public static TweetDetailFragment newInstance(@NonNull final Tweet tweet) {
         TweetDetailFragment fragment = new TweetDetailFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_TWEET, tweet);
+        args.putParcelable(ARG_TWEET, Parcels.wrap(tweet));
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,7 +52,7 @@ public class TweetDetailFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            tweet = (Tweet) getArguments().getSerializable(ARG_TWEET);
+            tweet = Parcels.unwrap(getArguments().getParcelable(ARG_TWEET));
         }
     }
 
