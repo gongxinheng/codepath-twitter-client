@@ -10,8 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.R;
@@ -98,7 +97,14 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
+        binding.fabCompose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getSupportFragmentManager();
+                ComposeTweetFragment composeTweetFragment = ComposeTweetFragment.newInstance();
+                composeTweetFragment.show(fm, Constants.FLAG_COMPOSE_FRAGMENT);
+            }
+        });
 
         // find the RecyclerView
         rvTweets = (RecyclerView) findViewById(R.id.rvTweet);
@@ -125,6 +131,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         populateTimeLine();
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -146,7 +153,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     private void populateTimeLine() {
         client.getNewHomeTimeline(defaultJsonHttpResponseHandler, 1, Constants.TWEETS_COUNT_PER_PAGE);
