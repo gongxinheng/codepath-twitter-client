@@ -39,7 +39,6 @@ public class TweetDetailFragment extends DialogFragment {
      * @param tweet Tweet info.
      * @return A new instance of fragment TweetDetailFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static TweetDetailFragment newInstance(@NonNull final Tweet tweet) {
         TweetDetailFragment fragment = new TweetDetailFragment();
         Bundle args = new Bundle();
