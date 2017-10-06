@@ -27,7 +27,9 @@ public class TwitterClient extends OAuthBaseClient {
     private static final String REST_CONSUMER_KEY = "HCJoKjjpxbTBxMRgoUZKOMbsq";
     private static final String REST_CONSUMER_SECRET = "YyWB5SthnKCxVuPdfmSjo0fzH4cRBU7PuhyWZoCV03C443kKub";
     private static final String REST_HOME_TIMELINE_URL = "statuses/home_timeline.json";
+    private static final String REST_MENTIONS_TIMELINE_URL = "statuses/mentions_timeline.json";
     private static final String REST_VERIFY_CREDENTIAL_URL = "account/verify_credentials.json";
+    private static final String REST_USER_TIMELINE_URL = "statuses/user_timeline.json";
     private static final String REST_STATUSES_UPDATE_URL =  "statuses/update.json";
 
     // Landing page to indicate the OAuth flow worked in case Chrome for Android 25+ blocks navigation back to the app.
@@ -65,8 +67,25 @@ public class TwitterClient extends OAuthBaseClient {
         client.get(apiUrl, params, handler);
     }
 
+    public void getMentionsTimeline(AsyncHttpResponseHandler handler, long maxId, int count) {
+        String apiUrl = getApiUrl(REST_MENTIONS_TIMELINE_URL);
+        // Can specify query string params directly or through RequestParams.
+        RequestParams params = new RequestParams();
+        params.put("count", count);
+        params.put("max_id", maxId);
+        client.get(apiUrl, params, handler);
+    }
+
     public void getUserProfile(AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl(REST_VERIFY_CREDENTIAL_URL);
+        client.get(apiUrl, handler);
+    }
+
+    public void getUserTimeline(String screenName, AsyncHttpResponseHandler handler, int count) {
+        String apiUrl = getApiUrl(REST_USER_TIMELINE_URL);
+        RequestParams params = new RequestParams();
+        params.put("count", count);
+        params.put("screen_name", screenName);
         client.get(apiUrl, handler);
     }
 

@@ -2,18 +2,25 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <RelativeLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.codepath.apps.restclienttemplate.activities.TimelineActivity">
+        android:orientation="vertical">
 
-        <fragment
-            android:id="@+id/fragment_timeline"
+        <android.support.design.widget.TabLayout
+            android:id="@+id/sliding_tabs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            class="com.codepath.apps.restclienttemplate.fragments.HomeTimelineFragment">
+            android:layout_height="wrap_content"
+            app:tabMode="fixed" />
 
-        </fragment>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"
+            android:background="@android:color/white" />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabCompose"
             android:src="@drawable/ic_compose"
@@ -22,6 +29,5 @@
             android:layout_alignParentBottom="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
-    </RelativeLayout>
+    </LinearLayout>
 </layout>

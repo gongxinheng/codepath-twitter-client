@@ -24,13 +24,18 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TweetsListFragment extends Fragment {
+public class TweetsListFragment extends Fragment implements TweetAdapter.TweetAdapterListener {
 
     protected FragmentTweetsListBinding binding;
     protected ArrayList<Tweet> tweets;
     protected TweetAdapter tweetAdapter;
     protected EndlessRecyclerViewScrollListener scrollListener;
     protected boolean offlineMode;
+
+    public interface TweetSelectedListener {
+        // handle tweet selection
+        public void onTweetSelected(Tweet tweet);
+    }
 
     // inflation happends inside onCreateView
     @Nullable
@@ -59,7 +64,7 @@ public class TweetsListFragment extends Fragment {
         // init the arrayList (data source)
         tweets = new ArrayList<>();
         // construct the adapter from this datasource
-        tweetAdapter = new TweetAdapter(tweets);
+        tweetAdapter = new TweetAdapter(tweets, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.scrollToPosition(0);
         // RecyclerView setup (layout manager, use adapter)
@@ -77,6 +82,12 @@ public class TweetsListFragment extends Fragment {
         // Adds the scroll listener to RecyclerView
         binding.rvTweets.addOnScrollListener(scrollListener);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onItemSeleted(View view, int position) {
+        Tweet tweet = tweets.get(position);
+        ((TweetSelectedListener) getActivity()).onTweetSelected(tweet);
     }
 
     public void addItems(@NonNull JSONArray response) {

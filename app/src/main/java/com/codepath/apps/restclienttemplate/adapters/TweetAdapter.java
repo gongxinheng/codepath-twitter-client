@@ -2,8 +2,6 @@ package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +9,7 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.databinding.ItemTweetBinding;
-import com.codepath.apps.restclienttemplate.fragments.TweetDetailFragment;
 import com.codepath.apps.restclienttemplate.models.Tweet;
-import com.codepath.apps.restclienttemplate.utils.Constants;
 
 import java.util.List;
 
@@ -21,10 +17,17 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
 
     private List<Tweet> mTweets;
     private Context context;
+    private TweetAdapterListener mListener;
+
+    // define an interface required by the ViewHolder
+    public interface TweetAdapterListener {
+        public void onItemSeleted(View view, int position);
+    }
 
     // pass in the Tweets array in the constructor
-    public TweetAdapter(List<Tweet> tweets) {
+    public TweetAdapter(List<Tweet> tweets, TweetAdapterListener listener) {
         mTweets = tweets;
+        mListener = listener;
     }
 
     // for each row, inflate the layout and cache references into ViewHolder
@@ -53,7 +56,7 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
 
     // create ViewHolder class
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public final ItemTweetBinding binding;
         public final Context context;
 
@@ -62,22 +65,25 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
             super(binding.getRoot());
             this.binding = binding;
             this.context = context;
+
+            // handle row click event
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        // get the position of row element
+                        int position = getAdapterPosition();
+                        // fire the listener callback
+                        mListener.onItemSeleted(view, position);
+                    }
+                }
+            });
         }
 
         public void bind(@NonNull final Tweet tweet) {
             binding.setTweet(tweet);
             Glide.with(context).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
             binding.executePendingBindings();
-            binding.getRoot().setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
-                            TweetDetailFragment tweetDetailFragment = TweetDetailFragment.newInstance(tweet);
-                            tweetDetailFragment.show(fm, Constants.FLAG_COMPOSE_FRAGMENT);
-                        }
-                    }
-            );
         }
     }
 }
