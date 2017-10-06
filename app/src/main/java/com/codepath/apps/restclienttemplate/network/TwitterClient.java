@@ -86,7 +86,7 @@ public class TwitterClient extends OAuthBaseClient {
         RequestParams params = new RequestParams();
         params.put("count", count);
         params.put("screen_name", screenName);
-        client.get(apiUrl, handler);
+        client.get(apiUrl, params, handler);
     }
 
     public void createTweet(AsyncHttpResponseHandler handler, String tweetText) {

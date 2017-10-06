@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,8 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.codepath.apps.restclienttemplate.activities.ProfileActivity;
 import com.codepath.apps.restclienttemplate.databinding.ItemTweetBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -21,7 +25,7 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
 
     // define an interface required by the ViewHolder
     public interface TweetAdapterListener {
-        public void onItemSeleted(View view, int position);
+        void onItemSeleted(View view, int position);
     }
 
     // pass in the Tweets array in the constructor
@@ -55,7 +59,6 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
     }
 
     // create ViewHolder class
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final ItemTweetBinding binding;
         public final Context context;
@@ -83,7 +86,20 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
         public void bind(@NonNull final Tweet tweet) {
             binding.setTweet(tweet);
             Glide.with(context).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
+            binding.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onViewProfile(tweet);
+                }
+            });
             binding.executePendingBindings();
         }
+    }
+
+    public void onViewProfile(@NonNull Tweet tweet) {
+        // launch the profile view
+        Intent i = new Intent(context, ProfileActivity.class);
+        i.putExtra("user", Parcels.wrap(tweet.user));
+        context.startActivity(i);
     }
 }
