@@ -75,7 +75,7 @@ public class ComposeTweetFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final TwitterClient twitterClient = TwitterApp.getRestClient();
+        final TwitterClient twitterClient = TwitterApp.getRestClient(getContext());
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_compose_tweet, container, false);
         binding.tvCharCounter.setText(String.valueOf(Constants.MAX_TWEET_CHARS_NUM));

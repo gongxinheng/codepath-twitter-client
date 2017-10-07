@@ -35,7 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         user = Parcels.unwrap(getIntent().getParcelableExtra("user"));
 
-        client = TwitterApp.getRestClient();
+        client = TwitterApp.getRestClient(this);
 
         // Current user
         if (user == null) {

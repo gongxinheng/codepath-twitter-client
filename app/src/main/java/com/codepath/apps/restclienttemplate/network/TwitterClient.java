@@ -8,6 +8,7 @@ import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
 
 /*
  * 
@@ -38,6 +39,16 @@ public class TwitterClient extends OAuthBaseClient {
 	// See https://developer.chrome.com/multidevice/android/intents
     private static final String REST_CALLBACK_URL_TEMPLATE = "intent://%s#Intent;action=android.intent.action.VIEW;scheme=%s;package=%s;S.browser_fallback_url=%s;end";
 
+    public Context getCurrentContext() {
+        return currentContext;
+    }
+
+    public void setCurrentContext(Context currentContext) {
+        this.currentContext = currentContext;
+    }
+
+    private Context currentContext;
+
     public TwitterClient(Context context) {
 		super(context, REST_API_INSTANCE,
 				REST_URL,
@@ -55,7 +66,7 @@ public class TwitterClient extends OAuthBaseClient {
 		RequestParams params = new RequestParams();
 		params.put("count", count);
 		params.put("since_id", sinceId);
-		client.get(apiUrl, params, handler);
+        getRequest(apiUrl, params, handler);
 	}
 
     public void getHomeTimeline(AsyncHttpResponseHandler handler, long maxId, int count) {
@@ -64,7 +75,7 @@ public class TwitterClient extends OAuthBaseClient {
         RequestParams params = new RequestParams();
         params.put("count", count);
         params.put("max_id", maxId);
-        client.get(apiUrl, params, handler);
+        getRequest(apiUrl, params, handler);
     }
 
     public void getMentionsTimeline(AsyncHttpResponseHandler handler, long maxId, int count) {
@@ -75,12 +86,12 @@ public class TwitterClient extends OAuthBaseClient {
         if (maxId > 0) {
             params.put("max_id", maxId);
         }
-        client.get(apiUrl, params, handler);
+        getRequest(apiUrl, params, handler);
     }
 
     public void getUserProfile(AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl(REST_VERIFY_CREDENTIAL_URL);
-        client.get(apiUrl, handler);
+        getRequest(apiUrl, null, handler);
     }
 
     public void getUserTimeline(AsyncHttpResponseHandler handler, String screenName, long maxId, int count) {
@@ -91,13 +102,26 @@ public class TwitterClient extends OAuthBaseClient {
         if (maxId > 0) {
             params.put("max_id", maxId);
         }
-        client.get(apiUrl, params, handler);
+        getRequest(apiUrl, params, handler);
+    }
+
+    private void getRequest(String url, RequestParams params, ResponseHandlerInterface responseHandler) {
+        client.get(url, params, responseHandler);
+        // Check if context implements NetworkRequestListener
+        if (currentContext != null && currentContext instanceof NetworkRequestListener) {
+            ((NetworkRequestListener) currentContext).onSendRequest();
+        }
     }
 
     public void createTweet(AsyncHttpResponseHandler handler, String tweetText) {
         String apiUrl = getApiUrl(REST_STATUSES_UPDATE_URL);
         RequestParams params = new RequestParams();
         params.put("status", tweetText);
-        client.post(apiUrl, params, handler);
+        getRequest(apiUrl, params, handler);
+    }
+
+    public interface NetworkRequestListener {
+        void onSendRequest();
+        void onReceiveResponse();
     }
 }

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +22,16 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.codepath.apps.restclienttemplate.utils.Config;
 import com.codepath.apps.restclienttemplate.utils.Constants;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public abstract class TweetsListFragment extends Fragment implements TweetAdapter.TweetAdapterListener {
 
@@ -35,6 +40,39 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     protected ArrayList<Tweet> tweets;
     protected TweetAdapter tweetAdapter;
     protected EndlessRecyclerViewScrollListener scrollListener;
+
+    protected final JsonHttpResponseHandler defaultJsonHttpResponseHandler = new JsonHttpResponseHandler() {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            Log.d("TwitterClient", response.toString());
+            onReceiveResponce();
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+            Log.d("TwitterClient", response.toString());
+            onReceiveResponce();
+            addItems(response);
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+            Log.d("TwitterClient", errorResponse.toString());
+            onReceiveResponce();
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+            Log.d("TwitterClient", errorResponse.toString());
+            onReceiveResponce();
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            Log.d("TwitterClient", responseString);
+            onReceiveResponce();
+        }
+    };
 
     public interface TweetSelectedListener {
         // handle tweet selection
@@ -46,7 +84,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        client = TwitterApp.getRestClient();
+        client = TwitterApp.getRestClient(getContext());
         // inflate the layout
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tweets_list, container, false);
 
@@ -115,8 +153,24 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         }
     }
 
-
     public void fetchTimelineAsync(int page) {
+        // Send the network request to fetch the updated data
+        // `client` here is an instance of Android Async HTTP
+        // getHomeTimeline is an example endpoint.
+        client.getNewHomeTimeline(new JsonHttpResponseHandler() {
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                // Clear out old items before appending in the new ones
+                reset();
+                // ...the data has come back, add new items to your adapter...
+                addItems(response);
+                // Now we call setRefreshing(false) to signal refresh has finished
+                binding.swipeContainer.setRefreshing(false);
+            }
+
+            public void onFailure(Throwable e) {
+                Log.d("DEBUG", "Fetch timeline error: " + e.toString());
+            }
+        }, 1, Constants.TWEETS_COUNT_PER_PAGE);
     }
 
     // Reset all views and clear items
@@ -148,6 +202,12 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
             getMoreTimeline(maxId);
         } else {
             populateTimeLine(Tweet.getTopOfflineTweets(offset, Constants.TWEETS_COUNT_PER_PAGE));
+        }
+    }
+
+    private void onReceiveResponce() {
+        if (getContext() instanceof TwitterClient.NetworkRequestListener) {
+            ((TwitterClient.NetworkRequestListener) getContext()).onReceiveResponse();
         }
     }
 }

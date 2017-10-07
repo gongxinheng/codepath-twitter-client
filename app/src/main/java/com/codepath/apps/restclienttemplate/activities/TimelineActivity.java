@@ -16,10 +16,14 @@ import com.codepath.apps.restclienttemplate.fragments.TweetDetailFragment;
 import com.codepath.apps.restclienttemplate.fragments.TweetsListFragment;
 import com.codepath.apps.restclienttemplate.fragments.TweetsPagerAdapter;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.codepath.apps.restclienttemplate.utils.Constants;
 
-public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener {
+public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener,
+        TwitterClient.NetworkRequestListener {
 
+    // Instance of the progress action-view
+    private MenuItem miActionProgressItem;
     private ActivityTimelineBinding binding;
 
     @Override
@@ -40,6 +44,30 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
         binding.viewpager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager(), this));
         // setup the TabLayout to use the view pager
         binding.slidingTabs.setupWithViewPager(binding.viewpager);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        // Extract the action-view from the menu item
+        // ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        // Return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    public void showProgressBar() {
+        if (miActionProgressItem != null) {
+            // Show progress item
+            miActionProgressItem.setVisible(true);
+        }
+    }
+
+    public void hideProgressBar() {
+        if (miActionProgressItem != null) {
+            // Hide progress item
+            miActionProgressItem.setVisible(false);
+        }
     }
 
     @Override
@@ -76,5 +104,15 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
         // launch the profile view
         Intent i = new Intent(this, ProfileActivity.class);
         startActivity(i);
+    }
+
+    @Override
+    public void onSendRequest() {
+        showProgressBar();
+    }
+
+    @Override
+    public void onReceiveResponse() {
+        hideProgressBar();
     }
 }

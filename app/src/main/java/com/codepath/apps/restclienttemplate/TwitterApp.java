@@ -2,6 +2,7 @@ package com.codepath.apps.restclienttemplate;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.raizlabs.android.dbflow.config.FlowConfig;
@@ -30,7 +31,10 @@ public class TwitterApp extends Application {
 		TwitterApp.context = this;
 	}
 
-	public static TwitterClient getRestClient() {
-		return (TwitterClient) TwitterClient.getInstance(TwitterClient.class, TwitterApp.context);
+	public static TwitterClient getRestClient(@NonNull Context context) {
+        TwitterClient twitterClient = (TwitterClient) TwitterClient.getInstance(TwitterClient.class, TwitterApp.context);
+        twitterClient.setCurrentContext(context);
+        
+        return twitterClient;
 	}
 }
