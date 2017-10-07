@@ -55,7 +55,6 @@ public class UserTimelineFragment extends TweetsListFragment {
         @Override
         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
             //Log.d("TwitterClient", errorResponse.toString());
-            offlineMode = true;
             Toast.makeText(getContext(), "Offline mode on", Toast.LENGTH_LONG).show();
             // Load offline
             populateTimeLine(Tweet.getTopOfflineTweets(0, Constants.TWEETS_COUNT_PER_PAGE));

@@ -19,6 +19,7 @@ import com.codepath.apps.restclienttemplate.databinding.FragmentTweetsListBindin
 import com.codepath.apps.restclienttemplate.listeners.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.network.TwitterClient;
+import com.codepath.apps.restclienttemplate.utils.Config;
 import com.codepath.apps.restclienttemplate.utils.Constants;
 
 import org.json.JSONArray;
@@ -34,7 +35,6 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     protected ArrayList<Tweet> tweets;
     protected TweetAdapter tweetAdapter;
     protected EndlessRecyclerViewScrollListener scrollListener;
-    protected boolean offlineMode;
 
     public interface TweetSelectedListener {
         // handle tweet selection
@@ -142,7 +142,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        if (!offlineMode) {
+        if (Config.isOnline()) {
             if (tweets.isEmpty()) return;
             long maxId = tweets.get(tweets.size() - 1).uid - 1;
             getMoreTimeline(maxId);
@@ -150,6 +150,4 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
             populateTimeLine(Tweet.getTopOfflineTweets(offset, Constants.TWEETS_COUNT_PER_PAGE));
         }
     }
-
-
 }
