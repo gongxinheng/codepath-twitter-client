@@ -6,7 +6,7 @@
         <variable name="tweet" type="com.codepath.apps.restclienttemplate.models.Tweet"/>
     </data>
     <RelativeLayout
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/text_horizontal_margin"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -61,5 +61,43 @@
             android:layout_marginRight="@dimen/text_horizontal_margin"
             android:layout_marginEnd="@dimen/text_horizontal_margin"
             android:text="@{tweet.createdAt}" />
+
+        <ImageView
+            android:id="@+id/ivMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tvBody"
+            android:layout_below="@+id/tvBody"
+            app:srcCompat="@android:color/holo_blue_bright" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivMedia"
+            android:layout_marginTop="@dimen/text_horizontal_margin">
+
+            <ImageView
+                android:id="@+id/ivReply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_reply_blue" />
+
+            <ImageView
+                android:id="@+id/ivRetweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_retweet_blue" />
+
+            <ImageView
+                android:id="@+id/ivFavorate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:src="@drawable/ic_favorate_blue" />
+        </LinearLayout>
+
     </RelativeLayout>
 </layout>

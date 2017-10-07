@@ -92,6 +92,13 @@ public class TweetAdapter extends  RecyclerView.Adapter<TweetAdapter.ViewHolder>
                     onViewProfile(tweet);
                 }
             });
+
+            if (tweet.mediaUrl == null) {
+                binding.ivMedia.setVisibility(View.GONE);
+            } else {
+                binding.ivMedia.setVisibility(View.VISIBLE);
+                Glide.with(context).load(tweet.mediaUrl).into(binding.ivMedia);
+            }
             binding.executePendingBindings();
         }
     }
