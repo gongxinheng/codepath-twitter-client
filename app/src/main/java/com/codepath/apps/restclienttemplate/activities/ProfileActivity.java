@@ -44,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     try {
                         user = User.fromJSON(response);
+                        binding.setUser(user);
                         loadUserTimeline(user.screenName);
                     /*
                     binding.setUser(user);
@@ -62,6 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
                 };
             });
         } else {
+            binding.setUser(user);
             loadUserTimeline(user.screenName);
             populateUserHeadline(user);
         }
@@ -71,10 +73,6 @@ public class ProfileActivity extends AppCompatActivity {
         // set the title of the ActionBar based on the user info
         getSupportActionBar().setTitle(user.screenName);
         binding.tvName.setText(user.name);
-
-        binding.tvTagline.setText(user.tagLine);
-        binding.tvFollowers.setText(user.followersCount + " Followers");
-        binding.tvFollowing.setText(user.followingCount + " Following");
 
         // load profile image with Glide
         Glide.with(this).load(user.profileImageUrl).into(binding.ivProfileImage);

@@ -3,11 +3,12 @@ package com.codepath.apps.restclienttemplate.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.codepath.apps.restclienttemplate.TwitterApp;
 import com.codepath.apps.restclienttemplate.models.Tweet;
-import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.codepath.apps.restclienttemplate.utils.Constants;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -17,8 +18,6 @@ import org.json.JSONObject;
 import cz.msebera.android.httpclient.Header;
 
 public class HomeTimelineFragment extends TweetsListFragment implements ComposeTweetFragment.PostTweetListener {
-
-    private TwitterClient client;
 
     private final JsonHttpResponseHandler defaultJsonHttpResponseHandler = new JsonHttpResponseHandler() {
         @Override
@@ -53,10 +52,13 @@ public class HomeTimelineFragment extends TweetsListFragment implements ComposeT
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        client = TwitterApp.getRestClient();
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, container, savedInstanceState);
         populateTimeLine();
+
+        return root;
     }
 
     @Override
@@ -81,19 +83,8 @@ public class HomeTimelineFragment extends TweetsListFragment implements ComposeT
     }
 
     @Override
-    public void loadNextDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        if (!offlineMode) {
-            if (tweets.isEmpty()) return;
-            long maxId = tweets.get(tweets.size() - 1).uid;
-            client.getHomeTimeline(defaultJsonHttpResponseHandler, maxId, Constants.TWEETS_COUNT_PER_PAGE);
-        } else {
-            populateTimeLine(Tweet.getTopOfflineTweets(offset, Constants.TWEETS_COUNT_PER_PAGE));
-        }
+    protected void getMoreTimeline(long maxId) {
+        client.getHomeTimeline(defaultJsonHttpResponseHandler, maxId, Constants.TWEETS_COUNT_PER_PAGE);
     }
 
     private void populateTimeLine() {

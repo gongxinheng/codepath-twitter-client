@@ -3,11 +3,12 @@ package com.codepath.apps.restclienttemplate.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.codepath.apps.restclienttemplate.TwitterApp;
 import com.codepath.apps.restclienttemplate.models.Tweet;
-import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.codepath.apps.restclienttemplate.utils.Constants;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -18,7 +19,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class UserTimelineFragment extends TweetsListFragment {
 
-    private TwitterClient client;
+    private String screenName;
 
     public static UserTimelineFragment newInstance(String screenName) {
         UserTimelineFragment userTimelineFragment = new UserTimelineFragment();
@@ -29,11 +30,14 @@ public class UserTimelineFragment extends TweetsListFragment {
         return userTimelineFragment;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        client = TwitterApp.getRestClient();
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, container, savedInstanceState);
+        screenName = getArguments().getString("screen_name");
         populateTimeLine();
+
+        return root;
     }
 
     private final JsonHttpResponseHandler defaultJsonHttpResponseHandler = new JsonHttpResponseHandler() {
@@ -69,7 +73,11 @@ public class UserTimelineFragment extends TweetsListFragment {
     };
 
     private void populateTimeLine() {
-        String screenName = getArguments().getString("screen_name");
-        client.getUserTimeline(screenName, defaultJsonHttpResponseHandler, Constants.TWEETS_COUNT_PER_PAGE);
+        client.getUserTimeline(defaultJsonHttpResponseHandler, screenName, 0, Constants.TWEETS_COUNT_PER_PAGE);
+    }
+
+    @Override
+    protected void getMoreTimeline(long maxId) {
+        client.getUserTimeline(defaultJsonHttpResponseHandler, screenName, maxId, Constants.TWEETS_COUNT_PER_PAGE);
     }
 }

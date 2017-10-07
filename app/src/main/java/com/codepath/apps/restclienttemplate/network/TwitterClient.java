@@ -72,7 +72,9 @@ public class TwitterClient extends OAuthBaseClient {
         // Can specify query string params directly or through RequestParams.
         RequestParams params = new RequestParams();
         params.put("count", count);
-        params.put("max_id", maxId);
+        if (maxId > 0) {
+            params.put("max_id", maxId);
+        }
         client.get(apiUrl, params, handler);
     }
 
@@ -81,11 +83,14 @@ public class TwitterClient extends OAuthBaseClient {
         client.get(apiUrl, handler);
     }
 
-    public void getUserTimeline(String screenName, AsyncHttpResponseHandler handler, int count) {
+    public void getUserTimeline(AsyncHttpResponseHandler handler, String screenName, long maxId, int count) {
         String apiUrl = getApiUrl(REST_USER_TIMELINE_URL);
         RequestParams params = new RequestParams();
         params.put("count", count);
         params.put("screen_name", screenName);
+        if (maxId > 0) {
+            params.put("max_id", maxId);
+        }
         client.get(apiUrl, params, handler);
     }
 

@@ -3,11 +3,12 @@ package com.codepath.apps.restclienttemplate.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.codepath.apps.restclienttemplate.TwitterApp;
 import com.codepath.apps.restclienttemplate.models.Tweet;
-import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.codepath.apps.restclienttemplate.utils.Constants;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -17,8 +18,6 @@ import org.json.JSONObject;
 import cz.msebera.android.httpclient.Header;
 
 public class MentionsTimelineFragment extends TweetsListFragment {
-
-    private TwitterClient client;
 
     private final JsonHttpResponseHandler defaultJsonHttpResponseHandler = new JsonHttpResponseHandler() {
         @Override
@@ -53,13 +52,21 @@ public class MentionsTimelineFragment extends TweetsListFragment {
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        client = TwitterApp.getRestClient();
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, container, savedInstanceState);
         populateTimeLine();
+
+        return root;
     }
 
     private void populateTimeLine() {
-        client.getNewHomeTimeline(defaultJsonHttpResponseHandler, 1, Constants.TWEETS_COUNT_PER_PAGE);
+        client.getMentionsTimeline(defaultJsonHttpResponseHandler, 0, Constants.TWEETS_COUNT_PER_PAGE);
+    }
+
+    @Override
+    protected void getMoreTimeline(long maxId) {
+        client.getMentionsTimeline(defaultJsonHttpResponseHandler, maxId, Constants.TWEETS_COUNT_PER_PAGE);
     }
 }

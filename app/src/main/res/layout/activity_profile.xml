@@ -2,6 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="user" type="com.codepath.apps.restclienttemplate.models.User"/>
+    </data>
 
     <RelativeLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,8 +29,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/ivProfileImage"
-                android:text="name"
-                android:textSize="16sp" />
+                android:text="@{user.name}"
+                android:textSize="16sp"
+                tools:text="name" />
             
             <TextView
                 android:id="@+id/tvTagline"
@@ -35,8 +39,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/tvName"
                 android:layout_below="@id/tvName"
-                android:text="Tagline"
-                android:textSize="12sp" />
+                android:text="@{user.tagLine}"
+                android:textSize="12sp"
+                tools:text="tagLine" />
         </RelativeLayout>
 
         <LinearLayout
@@ -50,14 +55,16 @@
                 android:id="@+id/tvFollowers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5 Followers" />
+                android:text="@{user.followersCount + ` followers`}"
+                tools:text="5 followers" />
 
             <TextView
                 android:id="@+id/tvFollowing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="5 Followers" />
+                android:text="@{user.followingCount + ` following`}"
+                tools:text="5 Following" />
         </LinearLayout>
 
         <FrameLayout
