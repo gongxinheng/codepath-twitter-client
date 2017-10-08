@@ -6,9 +6,9 @@
     </data>
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/text_horizontal_margin"
         tools:context="com.codepath.apps.restclienttemplate.fragments.TweetDetailFragment">
 
         <ImageView
@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:text="@{tweet.user.name}"
             android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/ivProfileImage"
             android:layout_alignStart="@+id/tvBody"
             tools:text="User Name" />
 
@@ -56,11 +57,16 @@
             android:id="@+id/tvCreatedAt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/tvScreenName"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_alignBaseline="@id/tvScreenName"
             android:layout_marginRight="@dimen/text_horizontal_margin"
             android:layout_marginEnd="@dimen/text_horizontal_margin"
-            android:text="@{tweet.createdAt}" />
+            android:textAlignment="textEnd"
+            android:gravity="end"
+            android:text="@{tweet.createdAt}"
+            tools:text="2hrs ago"/>
 
         <ImageView
             android:id="@+id/ivMedia"
@@ -69,6 +75,31 @@
             android:layout_alignStart="@+id/tvBody"
             android:layout_below="@+id/tvBody"
             app:srcCompat="@android:color/holo_blue_bright" />
+
+        <EditText
+            android:id="@+id/etReply"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/ivMedia"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:inputType="textMultiLine" />
+
+        <Button
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:id="@+id/btnReply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/etReply"
+            android:text="Reply"
+            android:layout_alignEnd="@id/tvCreatedAt" />
+
+        <TextView
+            android:id="@+id/tvReplyToName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/etReply"
+            tools:text="'@Hengstar"/>
 
     </RelativeLayout>
 </layout>

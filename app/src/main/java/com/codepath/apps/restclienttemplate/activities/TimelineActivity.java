@@ -96,7 +96,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
     @Override
     public void onTweetSelected(Tweet tweet) {
         FragmentManager fm = getSupportFragmentManager();
-        TweetDetailFragment tweetDetailFragment = TweetDetailFragment.newInstance(tweet);
+        TweetDetailFragment tweetDetailFragment = TweetDetailFragment.newInstance(tweet, false);
         tweetDetailFragment.show(fm, Constants.FLAG_TWEET_DETAIL_FRAGMENT);
     }
 

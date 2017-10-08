@@ -113,11 +113,27 @@ public class TwitterClient extends OAuthBaseClient {
         }
     }
 
+    private void postRequest(String url, RequestParams params, ResponseHandlerInterface responseHandler) {
+        client.post(url, params, responseHandler);
+        // Check if context implements NetworkRequestListener
+        if (currentContext != null && currentContext instanceof NetworkRequestListener) {
+            ((NetworkRequestListener) currentContext).onSendRequest();
+        }
+    }
+
     public void createTweet(AsyncHttpResponseHandler handler, String tweetText) {
         String apiUrl = getApiUrl(REST_STATUSES_UPDATE_URL);
         RequestParams params = new RequestParams();
         params.put("status", tweetText);
         getRequest(apiUrl, params, handler);
+    }
+
+    public void replyTweet(AsyncHttpResponseHandler handler, String replyText, long replyToId) {
+        String apiUrl = getApiUrl(REST_STATUSES_UPDATE_URL);
+        RequestParams params = new RequestParams();
+        params.put("status", replyText);
+        params.put("in_reply_to_status_id", replyToId);
+        postRequest(apiUrl, params, handler);
     }
 
     public interface NetworkRequestListener {

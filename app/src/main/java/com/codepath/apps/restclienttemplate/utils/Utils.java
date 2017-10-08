@@ -23,6 +23,15 @@ public class Utils {
             e.printStackTrace();
         }
 
+        for (int i = 0; i < relativeDate.length(); i++) {
+            char ch = relativeDate.charAt(i);
+            if (Character.isLetter(ch)) {
+                if (i > 0) {
+                    return (relativeDate.substring(0, i - 1) + ch);
+                }
+            }
+        }
+
         return relativeDate;
     }
 }

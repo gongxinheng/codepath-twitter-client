@@ -109,7 +109,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         // init the arrayList (data source)
         tweets = new ArrayList<>();
         // construct the adapter from this datasource
-        tweetAdapter = new TweetAdapter(tweets, this);
+        tweetAdapter = new TweetAdapter(tweets, this, getFragmentManager());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.scrollToPosition(0);
         // RecyclerView setup (layout manager, use adapter)
