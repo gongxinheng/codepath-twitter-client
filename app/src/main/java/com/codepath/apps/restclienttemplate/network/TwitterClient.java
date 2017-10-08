@@ -125,7 +125,7 @@ public class TwitterClient extends OAuthBaseClient {
         String apiUrl = getApiUrl(REST_STATUSES_UPDATE_URL);
         RequestParams params = new RequestParams();
         params.put("status", tweetText);
-        getRequest(apiUrl, params, handler);
+        postRequest(apiUrl, params, handler);
     }
 
     public void replyTweet(AsyncHttpResponseHandler handler, String replyText, long replyToId) {

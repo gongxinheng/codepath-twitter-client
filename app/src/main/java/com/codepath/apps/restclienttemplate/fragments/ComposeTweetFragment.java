@@ -43,6 +43,7 @@ public class ComposeTweetFragment extends DialogFragment {
 
     private FragmentComposeTweetBinding binding;
     private User user;
+    private PostTweetListener postTweetListener;
     private boolean dataReady;
 
     public ComposeTweetFragment() {
@@ -105,20 +106,20 @@ public class ComposeTweetFragment extends DialogFragment {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             try {
-                                ((PostTweetListener) ComposeTweetFragment.this.getActivity()).onPostReturn(true, Tweet.fronJSON(response));
+                                ((PostTweetListener) getActivity()).onPostReturn(true, Tweet.fronJSON(response));
                                 Toast.makeText(ComposeTweetFragment.this.getContext(), "Your tweet is posted!", Toast.LENGTH_LONG).show();
                             } catch (JSONException e) {
                                 Toast.makeText(ComposeTweetFragment.this.getContext(), e.toString(), Toast.LENGTH_LONG).show();
                             } finally {
-                                ComposeTweetFragment.this.dismiss();
+                                onReceiveResponce();
                             }
                         }
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                            ((PostTweetListener) ComposeTweetFragment.this.getActivity()).onPostReturn(false, null);
+                            ((PostTweetListener) getActivity()).onPostReturn(false, null);
                             Toast.makeText(ComposeTweetFragment.this.getContext(), errorResponse.toString(), Toast.LENGTH_LONG).show();
-                            ComposeTweetFragment.this.dismiss();
+                            onReceiveResponce();
                         }
 
 
@@ -151,5 +152,12 @@ public class ComposeTweetFragment extends DialogFragment {
 
     public interface PostTweetListener {
         void onPostReturn(boolean success, @Nullable Tweet newTweet);
+    }
+
+    private void onReceiveResponce() {
+        if (getContext() instanceof TwitterClient.NetworkRequestListener) {
+            ((TwitterClient.NetworkRequestListener) getContext()).onReceiveResponse();
+        }
+        dismiss();
     }
 }

@@ -58,7 +58,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
 
         @Override
         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            Log.d("TwitterClient", errorResponse.toString());
+            //Log.d("TwitterClient", errorResponse.toString());
             onReceiveResponce();
         }
 
@@ -179,7 +179,15 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         }, 1, Constants.TWEETS_COUNT_PER_PAGE);
     }
 
-    // Reset all views and clear items
+    public void insertNewTweet(@Nullable Tweet newTweet) {
+        tweets.add(0, newTweet);
+        newTweet.save();
+        tweetAdapter.notifyItemInserted(0);
+        binding.rvTweets.scrollToPosition(0);
+    }
+
+
+        // Reset all views and clear items
     protected void reset() {
         scrollListener.resetState();
         tweets.clear();

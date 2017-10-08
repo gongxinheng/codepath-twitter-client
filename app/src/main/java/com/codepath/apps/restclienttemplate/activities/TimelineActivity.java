@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate.activities;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -20,7 +21,7 @@ import com.codepath.apps.restclienttemplate.network.TwitterClient;
 import com.codepath.apps.restclienttemplate.utils.Constants;
 
 public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener,
-        TwitterClient.NetworkRequestListener {
+        TwitterClient.NetworkRequestListener, ComposeTweetFragment.PostTweetListener {
 
     // Instance of the progress action-view
     private MenuItem miActionProgressItem;
@@ -114,5 +115,15 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
     @Override
     public void onReceiveResponse() {
         hideProgressBar();
+    }
+
+    @Override
+    public void onPostReturn(boolean success, @Nullable Tweet newTweet) {
+        if (success && newTweet != null) {
+            TweetsListFragment tweetsListFragment = (TweetsListFragment) getSupportFragmentManager()
+                    .findFragmentByTag("android:switcher:" + R.id.viewpager + ":" + binding.viewpager.getCurrentItem());
+
+            tweetsListFragment.insertNewTweet(newTweet);
+        }
     }
 }
